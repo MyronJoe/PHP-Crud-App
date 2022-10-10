@@ -32,7 +32,7 @@
         <h1 class="pt-3">Products CRUD</h1>
 
         <div>
-        <a href="create.php" class="btn btn-warning btn-lg">Create Product</a>
+        <a href="create.php" class="btn btn-warning btn-md">Create Product</a>
         </div>
 
         <table class="table">

@@ -17,9 +17,33 @@
         $pdo = new PDO('mysql:host=localhost;port=3306;dbname=products_crud', 'root', '');
         $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
+        // echo '<pre>';
+        // var_dump($_SERVER);
+        // echo '</pre>';
+        // exit;
+
+        if ($_SERVER["REQUEST_METHOD"] === 'POST') {
+
+            $title = $_POST['title'];
+            $description = $_POST['description'];
+            $price = $_POST['price'];
+            $date = date('Y-m-d H-i-s');
+       
+
+
+            $statement = $pdo->prepare("INSERT INTO products (title, image, description, price, create_date) 
+            VALUES (:title, :image, :description, :price, :date)");
+
+            $statement->bindValue(':title', $title);
+            $statement->bindValue(':image', '');
+            $statement->bindValue(':description', $description);
+            $statement->bindValue(':price', $price);
+            $statement->bindValue(':date', $date);
+            $statement->execute();        
+        }
 
         // echo '<pre>';
-        // var_dump($products);
+        // var_dump($_POST);
         // echo '</pre>';
 
     ?>
@@ -29,10 +53,31 @@
         <h1 class="pt-3">Creat New Product</h1>
 
         <div>
-        <a href="index.php" class="btn btn-primary btn-lg">Go Back To Products</a>
+        <a href="index.php" class="btn btn-primary btn-md mt-3">Go Back To products</a>
         </div>
 
-        
+        <form method="POST" action="create.php" enctype="multipart/form-data" class="mt-4">
+            <div class="mb-3">
+                <label for="image" class="form-label">Choose a Product image</label>
+                <input type="file" class="form-control" name="image" id="image">
+            </div>
+            <div class="mb-3">
+                <label for="title" class="form-label">Product title</label>
+                <input type="text" class="form-control" name="title" id="title">
+            </div>
+
+            <div class="mb-3">
+                <label for="description" class="form-label">Product description</label>
+                <textarea name="description" id="description" class="form-control"></textarea>
+            </div>
+
+            <div class="mb-3">
+                <label for="price" class="form-label">Product price</label>
+                <input type="number" class="form-control" step=".01" name="price" id="price">
+            </div>
+            
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
 
     </div>
 
