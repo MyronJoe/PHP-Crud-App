@@ -18,9 +18,10 @@
         $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
         // echo '<pre>';
-        // var_dump($_SERVER);
+        // var_dump($_FILES);
         // echo '</pre>';
         // exit;
+
         $errors = [];
 
         $title = '';
@@ -42,18 +43,35 @@
                 $errors[] = 'Product price is required';
             }
        
+            if (!is_dir('images')) {
+                mkdir('images');
+            };
 
             if (empty($errors)) {
-            
+
+                $image = $_FILES['image'] ?? null;
+                $imagePath = '';
+
+
+                if ($image && $image['tmp_name']) {
+
+                    $imagePath = 'images/'.time().'/'.$image['name'];
+                    mkdir(dirname($imagePath));
+
+                    move_uploaded_file($image['tmp_name'], $imagePath);
+                }
+                
+
                 $statement = $pdo->prepare("INSERT INTO products (title, image, description, price, create_date) 
                 VALUES (:title, :image, :description, :price, :date)");
 
                 $statement->bindValue(':title', $title);
-                $statement->bindValue(':image', '');
+                $statement->bindValue(':image', $imagePath);
                 $statement->bindValue(':description', $description);
                 $statement->bindValue(':price', $price);
                 $statement->bindValue(':date', $date);
-                $statement->execute(); 
+                $statement->execute();
+                header('Location: index.php');
             
             }
         }

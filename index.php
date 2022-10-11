@@ -50,7 +50,9 @@
                 <?php foreach ($products as $key => $product): ?>
                         <tr>
                             <th scope="row"><?php echo $key + 1 ?></th>
-                            <td><?php echo $product['image'] ?></td>
+                            <td>
+                            <img style="width: 50px; height:50px; object-fit: cover;" src="<?php echo $product['image'] ?>" alt="<?php echo $product['title'] ?>">
+                            </td>
                             <td><?php echo $product['title'] ?></td>
                             <td><?php echo $product['price'] ?></td>
                             <td><?php echo $product['create_date'] ?></td>
