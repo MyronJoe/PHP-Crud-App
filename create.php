@@ -21,6 +21,11 @@
         // var_dump($_SERVER);
         // echo '</pre>';
         // exit;
+        $errors = [];
+
+        $title = '';
+        $description = '';
+        $date = '';
 
         if ($_SERVER["REQUEST_METHOD"] === 'POST') {
 
@@ -28,18 +33,29 @@
             $description = $_POST['description'];
             $price = $_POST['price'];
             $date = date('Y-m-d H-i-s');
+
+            if (!$title) {
+                $errors[] = 'Product title is required';
+            }
+       
+            if (!$price) {
+                $errors[] = 'Product price is required';
+            }
        
 
+            if (empty($errors)) {
+            
+                $statement = $pdo->prepare("INSERT INTO products (title, image, description, price, create_date) 
+                VALUES (:title, :image, :description, :price, :date)");
 
-            $statement = $pdo->prepare("INSERT INTO products (title, image, description, price, create_date) 
-            VALUES (:title, :image, :description, :price, :date)");
-
-            $statement->bindValue(':title', $title);
-            $statement->bindValue(':image', '');
-            $statement->bindValue(':description', $description);
-            $statement->bindValue(':price', $price);
-            $statement->bindValue(':date', $date);
-            $statement->execute();        
+                $statement->bindValue(':title', $title);
+                $statement->bindValue(':image', '');
+                $statement->bindValue(':description', $description);
+                $statement->bindValue(':price', $price);
+                $statement->bindValue(':date', $date);
+                $statement->execute(); 
+            
+            }
         }
 
         // echo '<pre>';
@@ -52,9 +68,18 @@
 
         <h1 class="pt-3">Creat New Product</h1>
 
-        <div>
+        <div class="mb-3">
         <a href="index.php" class="btn btn-primary btn-md mt-3">Go Back To products</a>
         </div>
+
+        
+        <?php if (!empty($errors)): ?>
+            <div class="alert alert-danger">
+                <?php foreach($errors as $error): ?>
+                    <dib><?php echo $error.'<br>' ?></dib>
+                <?php endforeach; ?>
+            </div>
+        <?php endif ?>
 
         <form method="POST" action="create.php" enctype="multipart/form-data" class="mt-4">
             <div class="mb-3">
@@ -63,17 +88,17 @@
             </div>
             <div class="mb-3">
                 <label for="title" class="form-label">Product title</label>
-                <input type="text" class="form-control" name="title" id="title">
+                <input type="text" class="form-control" name="title" id="title" value="<?php echo $title ?>">
             </div>
 
             <div class="mb-3">
                 <label for="description" class="form-label">Product description</label>
-                <textarea name="description" id="description" class="form-control"></textarea>
+                <textarea name="description" id="description" class="form-control" value="<?php echo $description ?>"></textarea>
             </div>
 
             <div class="mb-3">
                 <label for="price" class="form-label">Product price</label>
-                <input type="number" class="form-control" step=".01" name="price" id="price">
+                <input type="number" class="form-control" step=".01" name="price" id="price" value="<?php echo $price ?>">
             </div>
             
             <button type="submit" class="btn btn-primary">Submit</button>
