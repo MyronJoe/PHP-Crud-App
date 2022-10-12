@@ -57,7 +57,7 @@
                             <td><?php echo $product['price'] ?></td>
                             <td><?php echo $product['create_date'] ?></td>
                             <td>
-                                <button type="button" class="btn btn-outline-primary btn-sm">Edit</button>
+                                <a href="update.php?id=<?php echo $product['id'] ?>" class="btn btn-outline-primary btn-sm">Edit</a>
 
                                 <form action="delete.php" method="POST" style="display:inline-block;">
 
