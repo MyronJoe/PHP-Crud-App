@@ -24,20 +24,28 @@
             exit;
         }
 
-        $statement = $pdo->prepare('SELECT * FROM products');
+        $statement = $pdo->prepare('SELECT * FROM products WHERE id = :id');
+        $statement->bindValue(':id', $id);
+        $statement->execute();
+        $product = $statement->fetch(PDO::FETCH_ASSOC);
+
+        // echo '<pre>';
+        // var_dump($product);
+        // echo '</pre>';
+        // exit;
+
 
         $errors = [];
 
-        $title = '';
-        $description = '';
-        $date = '';
+        $title = $product['title'];
+        $description = $product['description'];
+        $price = $product['price'];
 
         if ($_SERVER["REQUEST_METHOD"] === 'POST') {
 
             $title = $_POST['title'];
             $description = $_POST['description'];
             $price = $_POST['price'];
-            $date = date('Y-m-d H-i-s');
 
             if (!$title) {
                 $errors[] = 'Product title is required';
@@ -54,10 +62,14 @@
             if (empty($errors)) {
 
                 $image = $_FILES['image'] ?? null;
-                $imagePath = '';
+                $imagePath = $product['image'];
 
 
                 if ($image && $image['tmp_name']) {
+
+                    if ($product['image']) {
+                        unlink($product['image']);
+                    }
 
                     $imagePath = 'images/'.time().'/'.$image['name'];
                     mkdir(dirname($imagePath));
@@ -66,14 +78,12 @@
                 }
                 
 
-                $statement = $pdo->prepare("INSERT INTO products (title, image, description, price, create_date) 
-                VALUES (:title, :image, :description, :price, :date)");
-
+                $statement = $pdo->prepare("UPDATE products SET title = :title', image = :image, description = :description, price = :price WHERE id = :id");
                 $statement->bindValue(':title', $title);
                 $statement->bindValue(':image', $imagePath);
                 $statement->bindValue(':description', $description);
                 $statement->bindValue(':price', $price);
-                $statement->bindValue(':date', $date);
+                $statement->bindValue(':id', $id);
                 $statement->execute();
                 header('Location: index.php');
             
@@ -88,10 +98,10 @@
 
     <div class="container">
 
-        <h1 class="pt-3">Creat New Product</h1>
+        <h1 class="pt-3">Update Product <b><?php echo $product['title'] ?></b></h1>
 
         <div class="mb-3">
-        <a href="index.php" class="btn btn-primary btn-md mt-3">Go Back To products</a>
+        <a href="index.php" class="btn btn-success btn-md mt-3">Go Back To products</a>
         </div>
 
         
@@ -104,6 +114,14 @@
         <?php endif ?>
 
         <form method="POST" action="create.php" enctype="multipart/form-data" class="mt-4">
+
+            <div class="mb-3">
+                <?php if ($product['image']): ?>
+                    <img height="150px" width="150px" style="object-fit: cover;" src="<?php echo $product['image'] ?>" alt="<?php echo $product['title'] ?>">
+                <?php endif?>
+            </div>
+
+
             <div class="mb-3">
                 <label for="image" class="form-label">Choose a Product image</label>
                 <input type="file" class="form-control" name="image" id="image">

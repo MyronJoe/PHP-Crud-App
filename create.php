@@ -26,7 +26,7 @@
 
         $title = '';
         $description = '';
-        $date = '';
+        $price = '';
 
         if ($_SERVER["REQUEST_METHOD"] === 'POST') {
 
